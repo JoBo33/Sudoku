@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>600</width>
+    <width>732</width>
     <height>450</height>
    </rect>
   </property>
@@ -27,7 +27,29 @@
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
-    <widget class="QTableView" name="tableView"/>
+    <widget class="QTableView" name="tableView">
+     <property name="sizeAdjustPolicy">
+      <enum>QAbstractScrollArea::AdjustToContents</enum>
+     </property>
+     <attribute name="horizontalHeaderVisible">
+      <bool>false</bool>
+     </attribute>
+     <attribute name="horizontalHeaderMinimumSectionSize">
+      <number>20</number>
+     </attribute>
+     <attribute name="horizontalHeaderDefaultSectionSize">
+      <number>65</number>
+     </attribute>
+     <attribute name="verticalHeaderVisible">
+      <bool>false</bool>
+     </attribute>
+     <attribute name="verticalHeaderMinimumSectionSize">
+      <number>20</number>
+     </attribute>
+     <attribute name="verticalHeaderDefaultSectionSize">
+      <number>65</number>
+     </attribute>
+    </widget>
    </item>
    <item>
     <layout class="QVBoxLayout" name="verticalLayout">
@@ -44,7 +66,7 @@
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_2">
         <item>
-         <widget class="QRadioButton" name="radioButton">
+         <widget class="QRadioButton" name="radioButtonEasy">
           <property name="text">
            <string>Easy</string>
           </property>
@@ -54,14 +76,14 @@
          </widget>
         </item>
         <item>
-         <widget class="QRadioButton" name="radioButton_2">
+         <widget class="QRadioButton" name="radioButtonNormal">
           <property name="text">
            <string>Normal</string>
           </property>
          </widget>
         </item>
         <item>
-         <widget class="QRadioButton" name="radioButton_3">
+         <widget class="QRadioButton" name="radioButtonHard">
           <property name="text">
            <string>Hard</string>
           </property>
@@ -71,7 +93,7 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pushButton">
+      <widget class="QPushButton" name="pushButtonGenerate">
        <property name="sizePolicy">
         <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
          <horstretch>0</horstretch>

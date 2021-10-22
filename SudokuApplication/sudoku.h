@@ -6,18 +6,21 @@
 
 class QTableView;
 QT_FORWARD_DECLARE_CLASS(QTableView)
-QT_FORWARD_DECLARE_CLASS(QAbstractTableModel)
+QT_FORWARD_DECLARE_CLASS(QStandardItemModel)
 
 class Sudoku : public QWidget, private Ui::Sudoku
 {
     Q_OBJECT
 public:
     explicit Sudoku(QWidget *parent = nullptr);
-
+    void generateSudoku(int checkedRadioButton);
 signals:
 
+private slots:
+    void generateSudoku();
+
 private:
-    QAbstractTableModel *model;
+    QStandardItemModel *model;
 };
 
 #endif // SUDOKU_H

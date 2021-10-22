@@ -31,17 +31,17 @@ public:
     QVBoxLayout *verticalLayout;
     QGroupBox *groupBox;
     QVBoxLayout *verticalLayout_2;
-    QRadioButton *radioButton;
-    QRadioButton *radioButton_2;
-    QRadioButton *radioButton_3;
-    QPushButton *pushButton;
+    QRadioButton *radioButtonEasy;
+    QRadioButton *radioButtonNormal;
+    QRadioButton *radioButtonHard;
+    QPushButton *pushButtonGenerate;
     QSpacerItem *verticalSpacer;
 
     void setupUi(QWidget *Sudoku)
     {
         if (Sudoku->objectName().isEmpty())
             Sudoku->setObjectName(QString::fromUtf8("Sudoku"));
-        Sudoku->resize(600, 450);
+        Sudoku->resize(732, 450);
         QSizePolicy sizePolicy(QSizePolicy::Maximum, QSizePolicy::Preferred);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
@@ -52,6 +52,13 @@ public:
         horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
         tableView = new QTableView(Sudoku);
         tableView->setObjectName(QString::fromUtf8("tableView"));
+        tableView->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+        tableView->horizontalHeader()->setVisible(false);
+        tableView->horizontalHeader()->setMinimumSectionSize(20);
+        tableView->horizontalHeader()->setDefaultSectionSize(65);
+        tableView->verticalHeader()->setVisible(false);
+        tableView->verticalHeader()->setMinimumSectionSize(20);
+        tableView->verticalHeader()->setDefaultSectionSize(65);
 
         horizontalLayout->addWidget(tableView);
 
@@ -66,34 +73,34 @@ public:
         groupBox->setSizePolicy(sizePolicy1);
         verticalLayout_2 = new QVBoxLayout(groupBox);
         verticalLayout_2->setObjectName(QString::fromUtf8("verticalLayout_2"));
-        radioButton = new QRadioButton(groupBox);
-        radioButton->setObjectName(QString::fromUtf8("radioButton"));
-        radioButton->setChecked(true);
+        radioButtonEasy = new QRadioButton(groupBox);
+        radioButtonEasy->setObjectName(QString::fromUtf8("radioButtonEasy"));
+        radioButtonEasy->setChecked(true);
 
-        verticalLayout_2->addWidget(radioButton);
+        verticalLayout_2->addWidget(radioButtonEasy);
 
-        radioButton_2 = new QRadioButton(groupBox);
-        radioButton_2->setObjectName(QString::fromUtf8("radioButton_2"));
+        radioButtonNormal = new QRadioButton(groupBox);
+        radioButtonNormal->setObjectName(QString::fromUtf8("radioButtonNormal"));
 
-        verticalLayout_2->addWidget(radioButton_2);
+        verticalLayout_2->addWidget(radioButtonNormal);
 
-        radioButton_3 = new QRadioButton(groupBox);
-        radioButton_3->setObjectName(QString::fromUtf8("radioButton_3"));
+        radioButtonHard = new QRadioButton(groupBox);
+        radioButtonHard->setObjectName(QString::fromUtf8("radioButtonHard"));
 
-        verticalLayout_2->addWidget(radioButton_3);
+        verticalLayout_2->addWidget(radioButtonHard);
 
 
         verticalLayout->addWidget(groupBox);
 
-        pushButton = new QPushButton(Sudoku);
-        pushButton->setObjectName(QString::fromUtf8("pushButton"));
+        pushButtonGenerate = new QPushButton(Sudoku);
+        pushButtonGenerate->setObjectName(QString::fromUtf8("pushButtonGenerate"));
         QSizePolicy sizePolicy2(QSizePolicy::Preferred, QSizePolicy::Fixed);
         sizePolicy2.setHorizontalStretch(0);
         sizePolicy2.setVerticalStretch(5);
-        sizePolicy2.setHeightForWidth(pushButton->sizePolicy().hasHeightForWidth());
-        pushButton->setSizePolicy(sizePolicy2);
+        sizePolicy2.setHeightForWidth(pushButtonGenerate->sizePolicy().hasHeightForWidth());
+        pushButtonGenerate->setSizePolicy(sizePolicy2);
 
-        verticalLayout->addWidget(pushButton);
+        verticalLayout->addWidget(pushButtonGenerate);
 
         verticalSpacer = new QSpacerItem(200, 300, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
@@ -112,10 +119,10 @@ public:
     {
         Sudoku->setWindowTitle(QCoreApplication::translate("Sudoku", "Form", nullptr));
         groupBox->setTitle(QCoreApplication::translate("Sudoku", "Difficulty", nullptr));
-        radioButton->setText(QCoreApplication::translate("Sudoku", "Easy", nullptr));
-        radioButton_2->setText(QCoreApplication::translate("Sudoku", "Normal", nullptr));
-        radioButton_3->setText(QCoreApplication::translate("Sudoku", "Hard", nullptr));
-        pushButton->setText(QCoreApplication::translate("Sudoku", "Generate", nullptr));
+        radioButtonEasy->setText(QCoreApplication::translate("Sudoku", "Easy", nullptr));
+        radioButtonNormal->setText(QCoreApplication::translate("Sudoku", "Normal", nullptr));
+        radioButtonHard->setText(QCoreApplication::translate("Sudoku", "Hard", nullptr));
+        pushButtonGenerate->setText(QCoreApplication::translate("Sudoku", "Generate", nullptr));
     } // retranslateUi
 
 };
