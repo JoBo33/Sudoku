@@ -1,6 +1,9 @@
 
 #include "sudoku.h"
 #include <QtWidgets>
+#include "mymodel.h"
+
+
 
 int main(int argc, char *argv[])
 {
@@ -12,6 +15,7 @@ int main(int argc, char *argv[])
     window.setCentralWidget(&sudo);
 
     window.show();
+
 
     return app.exec();
 }

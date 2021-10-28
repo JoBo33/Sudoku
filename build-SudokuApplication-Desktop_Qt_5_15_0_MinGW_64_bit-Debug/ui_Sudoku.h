@@ -35,6 +35,7 @@ public:
     QRadioButton *radioButtonNormal;
     QRadioButton *radioButtonHard;
     QPushButton *pushButtonGenerate;
+    QPushButton *pushButtonSolve;
     QSpacerItem *verticalSpacer;
 
     void setupUi(QWidget *Sudoku)
@@ -52,7 +53,10 @@ public:
         horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
         tableView = new QTableView(Sudoku);
         tableView->setObjectName(QString::fromUtf8("tableView"));
+        tableView->setEnabled(true);
+        tableView->setInputMethodHints(Qt::ImhFormattedNumbersOnly);
         tableView->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
+        tableView->setEditTriggers(QAbstractItemView::AnyKeyPressed|QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed);
         tableView->horizontalHeader()->setVisible(false);
         tableView->horizontalHeader()->setMinimumSectionSize(20);
         tableView->horizontalHeader()->setDefaultSectionSize(65);
@@ -102,6 +106,12 @@ public:
 
         verticalLayout->addWidget(pushButtonGenerate);
 
+        pushButtonSolve = new QPushButton(Sudoku);
+        pushButtonSolve->setObjectName(QString::fromUtf8("pushButtonSolve"));
+        pushButtonSolve->setEnabled(true);
+
+        verticalLayout->addWidget(pushButtonSolve);
+
         verticalSpacer = new QSpacerItem(200, 300, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
         verticalLayout->addItem(verticalSpacer);
@@ -123,6 +133,7 @@ public:
         radioButtonNormal->setText(QCoreApplication::translate("Sudoku", "Normal", nullptr));
         radioButtonHard->setText(QCoreApplication::translate("Sudoku", "Hard", nullptr));
         pushButtonGenerate->setText(QCoreApplication::translate("Sudoku", "Generate", nullptr));
+        pushButtonSolve->setText(QCoreApplication::translate("Sudoku", "Solve", nullptr));
     } // retranslateUi
 
 };
