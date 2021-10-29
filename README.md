@@ -14,7 +14,7 @@ The GUI contains the following widgets:
 - 3x RadioButton to choose the difficulty (easy, normal, hard)
 - PushButton to generate a Sudoku-grid
 
-![Sudoku-GUI](https://github.com/JoBo33/Sudoku/blob/main/Sudoku-GUI-Concept.png "Sudoku GUI-Concept")
+![Sudoku-GUI](https://github.com/JoBo33/Sudoku/blob/main/Example/Sudoku-GUI-Concept.png "Sudoku GUI-Concept")
 
 ### How does the creation work?
 
