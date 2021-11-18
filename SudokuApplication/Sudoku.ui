@@ -32,13 +32,16 @@
       <bool>true</bool>
      </property>
      <property name="inputMethodHints">
-      <set>Qt::ImhFormattedNumbersOnly</set>
+      <set>Qt::ImhDigitsOnly|Qt::ImhNoTextHandles</set>
      </property>
      <property name="sizeAdjustPolicy">
       <enum>QAbstractScrollArea::AdjustToContents</enum>
      </property>
      <property name="editTriggers">
-      <set>QAbstractItemView::AnyKeyPressed|QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed</set>
+      <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed</set>
+     </property>
+     <property name="gridStyle">
+      <enum>Qt::SolidLine</enum>
      </property>
      <attribute name="horizontalHeaderVisible">
       <bool>false</bool>

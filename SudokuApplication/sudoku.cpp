@@ -6,9 +6,9 @@
 
 /*
  * Sudoku difficulties:
- * easy : 45 cells filled
- * normal: 37 cells filled
- * hard: 30 cells filled
+ * easy : 45 filled cells
+ * normal: 37 filled cells
+ * hard: 30 filled cells
  */
 
 Sudoku::Sudoku(QWidget *parent) : QWidget(parent)
@@ -16,7 +16,10 @@ Sudoku::Sudoku(QWidget *parent) : QWidget(parent)
     setupUi(this);
 
     mod = new QStandardItemModel(this);
+
+    my = new QItemSelectionModel(mod);
     tableView->setModel(mod);
+    tableView->setSelectionModel(my);
 
     QList<QStandardItem*> rowData { new QStandardItem ("")};
     for(int i =0; i<9; i++){
@@ -29,9 +32,44 @@ Sudoku::Sudoku(QWidget *parent) : QWidget(parent)
 
     }
 
+    dyeGrid(mod);
+
     connect(pushButtonGenerate, SIGNAL (clicked()), this, SLOT(generateSudoku()));
-    connect(pushButtonSolve,SIGNAL(clicked()), this, SLOT(solveSudoku()));
+    connect(pushButtonSolve,SIGNAL(clicked()), this, SLOT(solve()));
+    //connect(tableView, SIGNAL(doubleClicked(const QModelIndex)), this, SLOT(reconnect()));
 }
+
+void Sudoku::solve(){
+    solveSudoku(true);
+}
+
+void Sudoku::reconnect(){
+    //connect(mod, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(validateUserEntry()));
+
+}
+
+void Sudoku::dyeGrid(QStandardItemModel * model){
+    for(int i = 0; i < model->rowCount(); i++){
+        for(int j = 0; j < 3; j++){
+            if(i < 3 || i>5){
+                model->setData(model->index(i,j),QBrush(Qt::lightGray),Qt::BackgroundRole);
+            }
+        }
+    }
+    for(int i = 3; i < 6; i++){
+        for(int j = 3; j < 6; j++){
+            model->setData(model->index(i,j),QBrush(Qt::lightGray),Qt::BackgroundRole);
+        }
+    }
+    for(int i = 0; i < model->rowCount(); i++){
+        for(int j = 6; j < model->columnCount(); j++){
+            if(i < 3 || i>5){
+                model->setData(model->index(i,j),QBrush(Qt::lightGray),Qt::BackgroundRole);
+            }
+        }
+    }
+}
+
 
 void Sudoku::generateSudoku(){
     pushButtonSolve->setEnabled(true);
@@ -41,54 +79,61 @@ void Sudoku::generateSudoku(){
         }
     }
 
-    fillValues();
+    fillValues(mod);
 
 }
 
-bool Sudoku::checkValue(int row, int column, int content){
+bool Sudoku::checkValue(QStandardItemModel* model, int row, int column, int content){
     bool isCorrect = true;
-    if(numberPartOfRowOrColumn(row, column, content) || numberPartOfSmallGrid(row, column, content)){//||
+    if(numberPartOfRowOrColumn(model, row, column, content) || numberPartOfSmallGrid(model, row, column, content)){//||
             // !tableView->model()->data(tableView->model()->index(row,column)).isNull()){
         isCorrect = false;
     }
 
     return isCorrect;
 }
-bool Sudoku::findEmptyCells(int& row, int& column)
+bool Sudoku::findEmptyCells(QStandardItemModel* model, int& row, int& column)
 {
-    for (row = 0; row < mod->rowCount(); row++)
-        for (column = 0; column < mod->columnCount(); column++)
-            if (tableView->model()->data(mod->index(row,column)) == "")
+    for (row = 0; row < model->rowCount(); row++)
+        for (column = 0; column < model->columnCount(); column++)
+            if (model->data(mod->index(row,column)) == "")
                 return true;
     return false;
 }
-bool Sudoku::numberPartOfRowOrColumn(int row, int column, int content){
+bool Sudoku::numberPartOfRowOrColumn(QStandardItemModel* model, int row, int column, int content){
     bool isPart = false;
     for(int i = 0; i < 9; i++){
-        if(tableView->model()->data(tableView->model()->index(row,i)) == content ||
-                tableView->model()->data(tableView->model()->index(i, column)) == content){
+        if(model->data(model->index(row,i)) == content ||
+                model->data(model->index(i, column)) == content){
             isPart = true;
         }
     }
     return isPart;
 }
 
-bool Sudoku::numberPartOfSmallGrid(int row, int column, int content){
+bool Sudoku::numberPartOfSmallGrid(QStandardItemModel* model, int row, int column, int content){
     bool isPart = false;
     int startRow = row - row%3;
     int startColumn = column - column%3;
     for (int i = 0; i < 3; i++)
            for (int j = 0; j < 3; j++)
-               if (tableView->model()->data(mod->index(i + startRow,j + startColumn)) == content)
+               if (model->data(model->index(i + startRow,j + startColumn)) == content)
                    isPart = true;;
     return isPart;
 }
 
+void Sudoku::setData(QStandardItemModel* model, int row, int column, QString num){
+    model->setData(model->index(row,column), num, Qt::DisplayRole);
+    model->item(row,column)->setTextAlignment(Qt::AlignCenter);
+    QFont font;
+    font.setPointSize(42);
+    model->item(row,column)->setFont(font);
+}
 
-bool Sudoku::solveSudoku(){
+bool Sudoku::solveSudoku(bool fillGrid){
     int row, column;
 
-    if(!findEmptyCells(row, column)){
+    if(!findEmptyCells(mod, row, column)){
         return true;
     }
 
@@ -96,18 +141,23 @@ bool Sudoku::solveSudoku(){
         {
 
             // Check if looks promising
-            if (checkValue(row, column, num))
+            if (checkValue(mod, row, column, num))
             {
 
                 // Make tentative assignment
-                tableView->model()->setData(tableView->model()->index(row,column), num, Qt::DisplayRole);
-
+                setData(mod, row, column,  QString::number(num));
                 // Return, if success
-                if (solveSudoku())
+                if (solveSudoku(fillGrid)){
+                    dyeGrid(mod);
+                    if(!fillGrid){
+                        mod->setData(mod->index(row,column), "", Qt::DisplayRole);
+                    }
+                    setNotEditable(mod, true);
                     return true;
+                }
 
                 // Failure, unmake & try again
-                tableView->model()->setData(tableView->model()->index(row,column), "", Qt::DisplayRole);
+                mod->setData(mod->index(row,column), "", Qt::DisplayRole);
             }
         }
 
@@ -115,17 +165,37 @@ bool Sudoku::solveSudoku(){
         return false;
 }
 
-void Sudoku::fillValues(){
-    fillDiagonalGrids();
+void Sudoku::setNotEditable(QStandardItemModel* model, bool solved){
+    for(int i = 0; i < model->rowCount(); i++){
+        for(int j = 0; j < model->columnCount(); j++){
+            if(model->data(model->index(i,j)) != ""){
+                if(solved){
+                    model->item(i,j)->setEditable(false);
+                }
+                else{
+                    model->item(i,j)->setEnabled(false);
+                }
+            }
+        }
+    }
+}
 
-    fillRemaining(0);
-    //solveSudoku();
+void Sudoku::fillValues(QStandardItemModel* model){
+    fillDiagonalGrids(model);
 
-    removeEntries();
+    fillRemaining(model, 0);
+
+    removeEntries(model);
+
+    dyeGrid(model);
+
+    setNotEditable(model, false);
+
+    connect(model, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(validateUserEntry()));
 }
 
 
-void Sudoku:: fillDiagonalGrids(){
+void Sudoku:: fillDiagonalGrids(QStandardItemModel* model){
     int content;
     // c = top-left corner of diagonal grids
     for(int c = 0; c < 9; c+=3){
@@ -136,18 +206,17 @@ void Sudoku:: fillDiagonalGrids(){
                 do{
                 content = QRandomGenerator::global()->bounded(1, 10);
                 }
-                while(numberPartOfSmallGrid(row, col,content));
+                while(numberPartOfSmallGrid(model, row, col,content));
 
-                tableView->model()->setData(tableView->model()->index(row,col), content, Qt::DisplayRole);
+                setData(model, row, col,  QString::number(content));
             }
         }
     }
 
 }
 
-bool Sudoku::fillRemaining(int i, int j){
+bool Sudoku::fillRemaining(QStandardItemModel* model, int i, int j){
     {
-           //  System.out.println(i+" "+j);
            if (j>=9 && i<8)
            {
                i = i + 1;
@@ -179,20 +248,21 @@ bool Sudoku::fillRemaining(int i, int j){
 
            for (int num = 1; num<=9; num++)
            {
-               if (checkValue(i, j, num))
+               if (checkValue(model, i, j, num))
                {
-                   tableView->model()->setData(tableView->model()->index(i, j), num, Qt::DisplayRole);
-                   if (fillRemaining(i, j+1))
+                   setData(model, i, j, QString::number(num));
+
+                   if (fillRemaining(model, i, j+1))
                        return true;
 
-                   tableView->model()->setData(tableView->model()->index(i, j), "", Qt::DisplayRole);
+                   model->setData(model->index(i, j), "", Qt::DisplayRole);
                }
            }
            return false;
        }
 }
 
-void Sudoku::removeEntries(){
+void Sudoku::removeEntries(QStandardItemModel* model){
     int filledCells = 0;
     if(radioButtonEasy->isChecked()){
         filledCells = 45;
@@ -208,9 +278,10 @@ void Sudoku::removeEntries(){
     for(int i = 0; i<81-filledCells; i++){
         int row = QRandomGenerator::global()->bounded(0, 9);
         int column = QRandomGenerator::global()->bounded(0, 9);
-        if(tableView->model()->data(mod->index(row, column)) != "")
+        if(model->data(model->index(row, column)) != "")
         {
-            tableView->model()->setData(tableView->model()->index(row,column), "", Qt::DisplayRole);
+            setData(model, row, column, "");
+
         }
         else{
             i--;
@@ -218,7 +289,34 @@ void Sudoku::removeEntries(){
     }
 }
 
+void Sudoku::copy(QStandardItemModel* from, QStandardItemModel* to)
+{
+   to->clear();
+   for (int i = 0 ; i < from->rowCount() ; i++)
+   {
+      to->appendRow(from->item(i)->clone());
+   }
+}
 
+
+void Sudoku::validateUserEntry(){
+    //disconnect(mod, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(validateUserEntry()));
+    //int row = my->currentIndex().row();
+    //int column = my->currentIndex().column();
+    //int num = tableView->model()->data(mod->index(row, column)).toInt();
+    //
+    //if (solveSudoku(false)) //warum immer true?????????????????????????????????????
+    //{
+    //    //setData(mod, row, column,  QString::number(num));
+    //    mod->setData(mod->index(row,column),QBrush(Qt::red),Qt::BackgroundRole);
+    //}
+    //else
+    //{
+    //    //setData(row, column,  QString::number(num));
+    //    mod->setData(mod->index(row,column),QBrush(Qt::green),Qt::BackgroundRole);
+    //}
+
+}
 
 
 

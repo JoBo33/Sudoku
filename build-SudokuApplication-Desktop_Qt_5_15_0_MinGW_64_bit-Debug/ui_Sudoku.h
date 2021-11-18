@@ -54,9 +54,10 @@ public:
         tableView = new QTableView(Sudoku);
         tableView->setObjectName(QString::fromUtf8("tableView"));
         tableView->setEnabled(true);
-        tableView->setInputMethodHints(Qt::ImhFormattedNumbersOnly);
+        tableView->setInputMethodHints(Qt::ImhDigitsOnly|Qt::ImhNoTextHandles);
         tableView->setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
-        tableView->setEditTriggers(QAbstractItemView::AnyKeyPressed|QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed);
+        tableView->setEditTriggers(QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed);
+        tableView->setGridStyle(Qt::SolidLine);
         tableView->horizontalHeader()->setVisible(false);
         tableView->horizontalHeader()->setMinimumSectionSize(20);
         tableView->horizontalHeader()->setDefaultSectionSize(65);
