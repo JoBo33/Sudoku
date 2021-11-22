@@ -1,7 +1,6 @@
 
 #include "sudoku.h"
 #include <QtWidgets>
-#include "mymodel.h"
 
 
 

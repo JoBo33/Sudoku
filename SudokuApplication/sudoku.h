@@ -3,8 +3,6 @@
 
 #include <QWidget>
 #include "ui_Sudoku.h"
-#include "mymodel.h"
-
 
 class QTableView;
 QT_FORWARD_DECLARE_CLASS(QTableView)
@@ -38,7 +36,6 @@ private slots:
     void reconnect();
 
 private:
-    MyModel model;
     QStandardItemModel *mod;
     QItemSelectionModel *my;
 };

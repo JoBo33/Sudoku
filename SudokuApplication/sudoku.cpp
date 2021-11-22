@@ -33,19 +33,20 @@ Sudoku::Sudoku(QWidget *parent) : QWidget(parent)
     }
 
     dyeGrid(mod);
-
+    generateSudoku();
     connect(pushButtonGenerate, SIGNAL (clicked()), this, SLOT(generateSudoku()));
     connect(pushButtonSolve,SIGNAL(clicked()), this, SLOT(solve()));
-    //connect(tableView, SIGNAL(doubleClicked(const QModelIndex)), this, SLOT(reconnect()));
+    connect(tableView, SIGNAL(doubleClicked(const QModelIndex)), this, SLOT(reconnect()));
 }
 
 void Sudoku::solve(){
+    dyeGrid(mod);
     solveSudoku(true);
 }
 
 void Sudoku::reconnect(){
-    //connect(mod, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(validateUserEntry()));
-
+    connect(mod, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(validateUserEntry()));
+    //qDebug() << a;
 }
 
 void Sudoku::dyeGrid(QStandardItemModel * model){
@@ -54,17 +55,24 @@ void Sudoku::dyeGrid(QStandardItemModel * model){
             if(i < 3 || i>5){
                 model->setData(model->index(i,j),QBrush(Qt::lightGray),Qt::BackgroundRole);
             }
+            else{
+                model->setData(model->index(i,j),QBrush(Qt::white),Qt::BackgroundRole);
+            }
         }
-    }
-    for(int i = 3; i < 6; i++){
         for(int j = 3; j < 6; j++){
-            model->setData(model->index(i,j),QBrush(Qt::lightGray),Qt::BackgroundRole);
+            if(i > 2 && i<6){
+                model->setData(model->index(i,j),QBrush(Qt::lightGray),Qt::BackgroundRole);
+            }
+            else{
+                model->setData(model->index(i,j),QBrush(Qt::white),Qt::BackgroundRole);
+            }
         }
-    }
-    for(int i = 0; i < model->rowCount(); i++){
         for(int j = 6; j < model->columnCount(); j++){
             if(i < 3 || i>5){
                 model->setData(model->index(i,j),QBrush(Qt::lightGray),Qt::BackgroundRole);
+            }
+            else{
+                model->setData(model->index(i,j),QBrush(Qt::white),Qt::BackgroundRole);
             }
         }
     }
@@ -103,11 +111,15 @@ bool Sudoku::findEmptyCells(QStandardItemModel* model, int& row, int& column)
 bool Sudoku::numberPartOfRowOrColumn(QStandardItemModel* model, int row, int column, int content){
     bool isPart = false;
     for(int i = 0; i < 9; i++){
-        if(model->data(model->index(row,i)) == content ||
+        if(model->data(model->index(row,i)) == content  ||
                 model->data(model->index(i, column)) == content){
             isPart = true;
+            int a = model->data(model->index(i, column)).toInt();
+            int b = model->data(model->index(row, i)).toInt();
+            int c = b;
         }
     }
+
     return isPart;
 }
 
@@ -118,7 +130,7 @@ bool Sudoku::numberPartOfSmallGrid(QStandardItemModel* model, int row, int colum
     for (int i = 0; i < 3; i++)
            for (int j = 0; j < 3; j++)
                if (model->data(model->index(i + startRow,j + startColumn)) == content)
-                   isPart = true;;
+                   isPart = true;
     return isPart;
 }
 
@@ -148,11 +160,13 @@ bool Sudoku::solveSudoku(bool fillGrid){
                 setData(mod, row, column,  QString::number(num));
                 // Return, if success
                 if (solveSudoku(fillGrid)){
-                    dyeGrid(mod);
+
                     if(!fillGrid){
                         mod->setData(mod->index(row,column), "", Qt::DisplayRole);
                     }
-                    setNotEditable(mod, true);
+                    else{
+                        setNotEditable(mod, true);
+                    }
                     return true;
                 }
 
@@ -300,23 +314,39 @@ void Sudoku::copy(QStandardItemModel* from, QStandardItemModel* to)
 
 
 void Sudoku::validateUserEntry(){
-    //disconnect(mod, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(validateUserEntry()));
-    //int row = my->currentIndex().row();
-    //int column = my->currentIndex().column();
-    //int num = tableView->model()->data(mod->index(row, column)).toInt();
-    //
-    //if (solveSudoku(false)) //warum immer true?????????????????????????????????????
-    //{
-    //    //setData(mod, row, column,  QString::number(num));
-    //    mod->setData(mod->index(row,column),QBrush(Qt::red),Qt::BackgroundRole);
-    //}
-    //else
-    //{
-    //    //setData(row, column,  QString::number(num));
-    //    mod->setData(mod->index(row,column),QBrush(Qt::green),Qt::BackgroundRole);
-    //}
+    disconnect(mod, SIGNAL(itemChanged(QStandardItem*)), this, SLOT(validateUserEntry()));
+    int row = my->currentIndex().row();
+    int column = my->currentIndex().column();
+    int num = tableView->model()->data(mod->index(row, column)).toInt();
 
+    bool isPart = false;
+    for(int i = 0; i < 9; i++){
+        if((mod->data(mod->index(row,i)) == num && i != column) ||
+                (mod->data(mod->index(i, column)) == num && i != row)){
+            isPart = true;
+        }
+    }
+    int startRow = row - row%3;
+    int startColumn = column - column%3;
+    for (int i = 0; i < 3; i++){
+           for (int j = 0; j < 3; j++){
+               if (mod->data(mod->index(i + startRow,j + startColumn)) == num && i + startRow != row && j + startColumn != column)
+                   isPart = true;
+            }
+    }
+
+    if((isPart || num < 1 || num > 9) && mod->data(mod->index(row, column)) != ""){
+        mod->setData(mod->index(row,column),QBrush(Qt::red),Qt::BackgroundRole);
+        return;
+    }
+
+    if (!solveSudoku(false))
+    {
+        //setData(mod, row, column,  QString::number(num));
+        mod->setData(mod->index(row,column),QBrush(Qt::red),Qt::BackgroundRole);
+    }
+    else
+    {
+        dyeGrid(mod);
+    }
 }
-
-
-
